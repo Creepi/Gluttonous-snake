@@ -19,3 +19,6 @@ td{
     background: #fff;
     border:1px #eeeeee solid;
 }
+.snake_head{
+    background: red
+}
