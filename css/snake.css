@@ -4,7 +4,7 @@
     border: 0px;
 }
 body{
-    background: #545549;
+    background: white;
 }
 table{
     border-collapse:collapse;
@@ -20,5 +20,8 @@ td{
     border:1px #eeeeee solid;
 }
 .snake_head{
-    background: red
+    background: grey
+}
+.snake_body{
+    background: black
 }
