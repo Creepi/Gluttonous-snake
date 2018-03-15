@@ -8,7 +8,7 @@ window.onload = function () {
         this.keyButton = 39 //键盘操作
         this.speed = 10
         this.timer = null //计时器
-        this.stop = true//空格
+        this.stop = true //空格
         this.init()
     }
     Snake.prototype = {
@@ -42,13 +42,22 @@ window.onload = function () {
             table.appendChild(tbody)
             document.getElementsByClassName('content-wrap')[0].appendChild(table)
         },
-        isBody: function (arr) {
-            for (let i = 0; i < this.snakeArr.length; i++) {
+        isBody: function (arr,index) {
+            let i= index||0
+            for (i; i < this.snakeArr.length; i++) {
                 if (arr[0] == this.snakeArr[i][0] && arr[1] == this.snakeArr[i][1]) {
                     return true
                 }
             }
             return false
+        },
+        isOut: function (pos) {
+            if (pos instanceof Array) {
+                if (pos[0] < 0 || pos[0] > this.width - 1 || pos[1] < 0 || pos[1] > this.height - 1) {
+                    return true;
+                }
+            }
+            return false;
         },
         createSnake: function () {
             //初始化蛇
@@ -134,8 +143,16 @@ window.onload = function () {
                 for (let i = this.snakeArr.length - 1; i > 0; i--) {
                     this.snakeArr[i] = this.snakeArr[i - 1]
                 }
-                this.snakeArr[0] = [head_x,head_y];
-                console.log(this.snakeArr.length)
+                this.snakeArr[0] = [head_x, head_y];
+                
+                if (this.isBody(this.snakeArr[0],1)) {
+                   alert( "蛇咬蛇")
+                }
+                //判断是否撞墙
+                else if (this.isOut(this.snakeArr[0])) {
+
+                    alert("Winter is coming")
+                }
             }
             this.drawSnake()
             this.gridArr[head_x][head_y].className = "snake_head";
