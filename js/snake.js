@@ -8,7 +8,7 @@ window.onload = function () {
         this.keyButton = 39 //键盘操作
         this.speed = 10
         this.timer = null //计时器
-        this.direction = 'right'
+        this.stop = true//空格
         this.init()
     }
     Snake.prototype = {
