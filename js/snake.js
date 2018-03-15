@@ -1,9 +1,10 @@
 window.onload = function () {
     const Snake = function (width, height) {
-        this.width = width || 30 //默认宽度
-        this.height = height || 30 //默认高度
+        this.width = width || 10 //默认宽度
+        this.height = height || 10 //默认高度
         this.gridArr = [] //保存单元格
         this.snakeArr = [] //蛇本体
+        this.foodArr = [] //食物
         this.keyButton = 39 //键盘操作
         this.speed = 10
         this.timer = null //计时器
@@ -22,6 +23,7 @@ window.onload = function () {
             console.log(this.gridArr)
             this.createMap()
             this.createSnake()
+            this.createFood()
             document.onkeydown = this.keyDown.bind(that)
         },
         createMap: function () {
@@ -40,26 +42,54 @@ window.onload = function () {
             table.appendChild(tbody)
             document.getElementsByClassName('content-wrap')[0].appendChild(table)
         },
+        isBody: function (arr) {
+            for (let i = 0; i < this.snakeArr.length; i++) {
+                if (arr[0] == this.snakeArr[i][0] && arr[1] == this.snakeArr[i][1]) {
+                    return true
+                }
+            }
+            return false
+        },
         createSnake: function () {
             //初始化蛇
-			this.snakeArr = [] ;
-			this.snakeArr.push([1,3]);
-			this.snakeArr.push([1,2]);
-			this.snakeArr.push([1,1]);
+            this.snakeArr = [];
+            this.snakeArr.push([1, 3]);
+            this.snakeArr.push([1, 2]);
+            this.snakeArr.push([1, 1]);
             this.gridArr[this.snakeArr[0][0]][this.snakeArr[0][1]].className = "snake_head";
             this.gridArr[this.snakeArr[1][0]][this.snakeArr[1][1]].className = "snake_body";
             this.gridArr[this.snakeArr[2][0]][this.snakeArr[2][1]].className = "snake_body";
-
-
+        },
+        createFood: function () {
+            let food_x = parseInt(this.width * Math.random())
+            let food_y = parseInt(this.height * Math.random())
+            //检测是否食物生成在蛇身体内
+            if (this.isBody([food_x, food_y])) {
+                this.createFood()
+            } else {
+                //绘制食物
+                this.foodArr = [food_x, food_y]
+                this.gridArr[food_x][food_y].className = "snake_food";
+            }
         },
         keyDown: function (event) {
             let e = event || window.event;
             let keycode = e ? e.keyCode : 0;
+            if (keycode == 32) { //空格键控制开始/暂停
+                if (this.stop) {
+                    this.move();
+                    this.stop = false;
+                } else {
+                    if (this.timer) {
+                        clearInterval(this.timer);
+                    }
+                    this.stop = true;
+                }
+            }
             if (keycode >= 37 && keycode <= 40) {
                 this.keyButton = keycode
+                this.move()
             }
-            this.move()
-            console.log(this.keyButton)
         },
         mount: function () {
             let head_x = this.snakeArr[0][0]
@@ -91,13 +121,22 @@ window.onload = function () {
             }
             head_x += this.pos_x;
             head_y += this.pos_y;
-            //去除蛇最后一个部分
-            this.gridArr[this.snakeArr[this.snakeArr.length - 1][0]][this.snakeArr[this.snakeArr.length - 1][1]].className = "";
-            for (let i = this.snakeArr.length - 1; i > 0; i--) {
-                this.snakeArr[i] = this.snakeArr[i - 1];
+            if (head_x == this.foodArr[0] && head_y == this.foodArr[1]) {
+                //吃到食物
+                this.snakeArr.unshift(this.foodArr);
+                this.createFood()
+                console.log('!!!!')
+                this.move()
+            } else {
+                //去除蛇最后一个部分
+                this.gridArr[this.snakeArr[this.snakeArr.length - 1][0]][this.snakeArr[this.snakeArr.length - 1][1]].className = "not";
+
+                for (let i = this.snakeArr.length - 1; i > 0; i--) {
+                    this.snakeArr[i] = this.snakeArr[i - 1]
+                }
+                this.snakeArr[0] = [head_x,head_y];
+                console.log(this.snakeArr.length)
             }
-            this.snakeArr[0] = [head_x, head_y];
-            console.log(this.snakeArr.length - 1)
             this.drawSnake()
             this.gridArr[head_x][head_y].className = "snake_head";
 
@@ -114,9 +153,9 @@ window.onload = function () {
         drawSnake: function () {
             //绘制蛇身体
             for (let i = 0; i < this.snakeArr.length; i++) {
+                console.log(this.snakeArr.length)
                 let snake_temp1 = this.snakeArr[i][0],
                     snake_temp2 = this.snakeArr[i][1];
-                this.gridArr[snake_temp1][snake_temp2].className = "snake_body";
                 this.gridArr[snake_temp1][snake_temp2].className = "snake_body";
             }
         }

@@ -25,3 +25,6 @@ td{
 .snake_body{
     background: black
 }
+.snake_food{
+    background: yellow
+}
